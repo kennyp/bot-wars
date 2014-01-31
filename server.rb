@@ -4,7 +4,7 @@ require 'pry'
 
 
 post '/' do
-  Open3.popen2('Generic', 'rw') do |stdin,stdout|
+  Open3.popen2('bot', 'rw') do |stdin,stdout|
     stdin.puts params[:data]
     stdout.read
   end

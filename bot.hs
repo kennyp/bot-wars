@@ -4,7 +4,10 @@
 
 import Data.Aeson (FromJSON, ToJSON, decode, encode)
 import qualified Data.ByteString.Lazy.Char8 as BL
+import qualified Data.Text.Lazy as LT
 import GHC.Generics (Generic)
+import Web.Scotty
+import Data.Monoid (mconcat)
 
 type Board = String
 
@@ -114,10 +117,10 @@ makeTurn g = map (moveToGameMove r c) $ makeMoves r c gr p
         c = cols s
         gr = grid s
 
-main :: IO ()
-main = do
-  input <- getLine
-  let req = decode $ BL.pack input :: Maybe GameInput
-  case req of
-    Just g -> putStrLn $ BL.unpack $ encode $ makeTurn g
-    Nothing -> putStrLn "Error!"
+main = scotty 4567 $ do
+  post "/" $ do
+    input <- body
+    let req = decode input :: Maybe GameInput
+    case req of
+      Just g -> html $ LT.pack $ BL.unpack $ encode $ makeTurn g
+      Nothing -> html $ mconcat ["Error!"]
